@@ -71,3 +71,6 @@ src/
 - **Google Maps API** — nearest police stations
 - **Firebase** — push notifications
 - **Supabase** — database & auth
+
+
+## Major Dezigns Technologies
