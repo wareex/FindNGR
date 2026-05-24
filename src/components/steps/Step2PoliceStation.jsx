@@ -1,123 +1,155 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { fetchPoliceStations } from '../../utils/policeStations.js'
 
-const STATIONS = [
-  {
-    name: 'Surulere Police Station',
-    badge: true,
-    meta: "Area 'E' Command · Adeniran Ogunsanya St, Surulere, Lagos",
-    dist: '📍 0.8 km · ~4 min drive',
-    phone: '0803 000 0001',
-    recommended: true,
-  },
-  {
-    name: 'Lagos Island Division',
-    meta: 'Force CID Annex · Broad Street, Lagos Island',
-    dist: '📍 2.4 km · ~12 min drive',
-    phone: '0803 000 0002',
-  },
-  {
-    name: 'Apapa Police Station',
-    meta: "Area 'B' Command · Wharf Road, Apapa",
-    dist: '📍 4.1 km · ~20 min drive',
-    phone: '0803 000 0003',
-  },
-]
+export default function Step2PoliceStation({ data, personData, onChange, onNext, onBack }) {
+  const [stations, setStations] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [searched, setSearched] = useState(false)
+  const [error, setError] = useState(null)
 
-export default function Step2PoliceStation({ onNext, onBack }) {
-  const [selected, setSelected] = useState(0)
+  // Auto-search when we arrive on this step if state is set
+  useEffect(() => {
+    if (personData?.state && !searched) {
+      handleSearch()
+    }
+  }, [])
+
+  const handleSearch = async () => {
+    setLoading(true)
+    setError(null)
+    setSearched(true)
+    try {
+      const results = await fetchPoliceStations(personData?.state, personData?.lga)
+      setStations(results)
+    } catch (e) {
+      setError('Could not load stations. Please select manually below or call 112.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const select = (station) => {
+    onChange({ ...data, selectedStation: station })
+  }
+
+  const validate = () => {
+    if (!data.selectedStation) {
+      setError('Please select a police station or enter one manually')
+      return false
+    }
+    return true
+  }
 
   return (
-    <div className="flow-section">
-      <div className="card">
-        <div className="card-header">
-          <div className="card-title-wrap">
-            <div className="card-title">Nearest police station</div>
-            <div className="card-subtitle">Auto-detected from the last seen location you provided</div>
-          </div>
-          <div className="card-icon ci-navy">🏛️</div>
+    <div>
+      <div className="anon-banner">
+        <div className="anon-banner-icon">🏛️</div>
+        <div className="anon-banner-text">
+          We searched for <strong>police stations near {personData?.state || 'your location'}</strong>.
+          Select the one you wish to notify, or the closest one to your area.
+          You can also contact the Nigeria Police Force directly at <strong>112</strong>.
         </div>
-        <div className="card-inner">
+      </div>
 
-          <div className="map-mock">
-            <div className="map-bg-dots">
-              <div className="mdot mdot-blue" style={{ top: '20%', left: '15%' }} />
-              <div className="mdot mdot-blue" style={{ top: '60%', left: '25%' }} />
-              <div className="mdot mdot-blue" style={{ top: '40%', left: '70%' }} />
-              <div className="mdot mdot-blue" style={{ top: '75%', left: '60%' }} />
-              <div className="mdot mdot-red" style={{ top: '45%', left: '45%' }} />
-            </div>
-            <div className="map-pin-label">
-              <div className="map-pin-icon">📍</div>
-              <div>
-                <div className="map-pin-text">Last seen location</div>
-                <div className="map-pin-name">Surulere, Lagos · Google Maps</div>
-              </div>
-            </div>
-          </div>
+      {personData?.state && (
+        <div className="station-search-box">
+          <input
+            className="field-input"
+            value={`${personData.state}${personData.lga ? ` — ${personData.lga}` : ''}`}
+            readOnly
+          />
+          <button className="btn-search-stations" onClick={handleSearch} disabled={loading}>
+            {loading ? <><span className="spinner" /> Searching…</> : '🔍 Refresh Search'}
+          </button>
+        </div>
+      )}
 
-          <div className="section-label" style={{ marginBottom: '10px' }}>
-            Stations near last seen location — select one to visit
-          </div>
+      {loading && (
+        <div className="station-loading">
+          <span className="spinner" />
+          Searching OpenStreetMap for police stations near {personData?.state}…
+        </div>
+      )}
 
-          {STATIONS.map((s, i) => (
+      {error && <div className="field-error" style={{ marginBottom: 12 }}>{error}</div>}
+
+      {!loading && stations.length > 0 && (
+        <div className="stations-list">
+          {stations.map((s, i) => (
             <div
               key={i}
-              className={`station-card ${selected === i ? 'selected' : ''}`}
-              onClick={() => setSelected(i)}
+              className={`station-card ${data.selectedStation?.name === s.name ? 'selected' : ''}`}
+              onClick={() => select(s)}
             >
-              <div
-                className="station-avatar"
-                style={i !== 0 ? { background: 'var(--gray)', color: 'var(--text3)' } : {}}
-              >
-                🏛️
-              </div>
-              <div style={{ flex: 1 }}>
-                <div className="station-name">
-                  {s.name}
-                  {s.recommended && (
-                    <span className="badge badge-blue" style={{ marginLeft: '6px' }}>Recommended</span>
-                  )}
-                </div>
-                <div className="station-meta">{s.meta}</div>
-                <div>
-                  <span
-                    className="station-dist"
-                    style={i !== 0 ? { background: 'var(--gray)', color: 'var(--text3)' } : {}}
-                  >
-                    {s.dist}
-                  </span>
-                </div>
-                <div className="station-actions">
-                  <button className="btn-xs btn-xs-primary">🗺️ Get directions</button>
-                  <button className="btn-xs">📞 Call: {s.phone}</button>
-                  <button className="btn-xs">📋 Station details</button>
-                </div>
+              <div className="station-card-name">🏢 {s.name}</div>
+              <div className="station-card-detail">
+                {s.address && <span>📍 {s.address}</span>}
+                {s.dist != null && <span>  ·  ~{s.dist} km away</span>}
+                {s.phone && <span>  ·  📞 {s.phone}</span>}
               </div>
             </div>
           ))}
-
-          <div className="qr-box">
-            <div className="qr-visual">▦</div>
-            <div>
-              <div className="qr-title">Your case QR code is ready</div>
-              <div className="qr-sub">
-                Show this at the station front desk. The officer will scan it to pull up your case instantly — no manual re-entry needed. Valid for 48 hours.
-              </div>
-            </div>
-          </div>
-
-          <div className="warn-block" style={{ marginTop: '12px' }}>
-            <span className="warn-icon">⚠️</span>
-            <span className="warn-text">
-              You must visit the station in person to complete official documentation. This cannot be done remotely.
-            </span>
-          </div>
-
-          <div className="btn-row" style={{ marginTop: '8px' }}>
-            <button className="btn-secondary" onClick={onBack}>← Back</button>
-            <button className="btn-primary" onClick={onNext}>I've visited the station →</button>
-          </div>
         </div>
+      )}
+
+      {!loading && searched && stations.length === 0 && (
+        <div className="station-no-results">
+          <div style={{ fontSize: '2rem', marginBottom: 8 }}>🔍</div>
+          <div>No stations found on the map for this area.</div>
+          <div style={{ marginTop: 8 }}>Please enter the station name manually below.</div>
+        </div>
+      )}
+
+      <div className="field-group" style={{ marginTop: 20 }}>
+        <label className="field-label">Enter Station Name Manually (optional override)</label>
+        <input
+          className="field-input"
+          placeholder="e.g. Iyaganku Police Division, Ibadan"
+          value={data.manualStation || ''}
+          onChange={e => {
+            onChange({
+              ...data,
+              manualStation: e.target.value,
+              selectedStation: e.target.value ? { name: e.target.value, address: '', phone: '' } : data.selectedStation
+            })
+          }}
+        />
+      </div>
+
+      <div className="field-group">
+        <label className="field-label">Have you already reported to police?</label>
+        <select
+          className="field-input"
+          value={data.policeReported || ''}
+          onChange={e => onChange({ ...data, policeReported: e.target.value })}
+        >
+          <option value="">Select</option>
+          <option>Yes — already reported</option>
+          <option>No — not yet reported</option>
+          <option>No — but will do so</option>
+        </select>
+      </div>
+
+      {data.policeReported === 'Yes — already reported' && (
+        <div className="field-group">
+          <label className="field-label">Case / Report Reference Number</label>
+          <input
+            className="field-input"
+            placeholder="e.g. KAN/2025/001234"
+            value={data.caseRef || ''}
+            onChange={e => onChange({ ...data, caseRef: e.target.value })}
+          />
+        </div>
+      )}
+
+      <div className="step-nav">
+        <button className="btn-back" onClick={onBack}>← Back</button>
+        <button
+          className="btn-next"
+          onClick={() => { if (!data.selectedStation && !data.manualStation) { setError('Please select or enter a police station') } else { onNext() } }}
+        >
+          Next: Contact Details →
+        </button>
       </div>
     </div>
   )

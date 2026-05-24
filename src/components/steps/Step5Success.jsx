@@ -1,28 +1,36 @@
-export default function Step5Success() {
+export default function Step5Success({ refNum, onDone, type = 'report' }) {
   return (
-    <div className="flow-section">
-      <div className="success-card">
-        <div className="checkmark-ring">✅</div>
-        <h2 className="success-title">Report submitted</h2>
-        <p className="success-sub">
-          Your case has been filed officially. Community alerts are now live. You will receive SMS updates on any developments.
-        </p>
-        <div style={{ background: 'var(--gray)', borderRadius: 'var(--radius-sm)', padding: '14px', textAlign: 'left', marginBottom: '1.5rem' }}>
-          <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '.06em', color: 'var(--text3)', marginBottom: '8px' }}>
-            Your case reference
-          </div>
-          <div style={{ fontSize: '18px', fontWeight: '500', color: 'var(--text)', fontFamily: 'monospace' }}>
-            LG/SUR/MP/2025-0441
-          </div>
-          <div style={{ fontSize: '12px', color: 'var(--text3)', marginTop: '4px' }}>
-            Save this number. Use it to contact Insp. Obiora Nwosu directly.
-          </div>
+    <div className="success-screen">
+      <div className="success-icon">{type === 'report' ? '✅' : '🙏'}</div>
+      <h2 className="success-title">
+        {type === 'report' ? 'Report Submitted' : 'Sighting Reported'}
+      </h2>
+      <p className="success-sub">
+        {type === 'report'
+          ? 'Your missing person report has been recorded and is now visible on the Missing Persons Board. Relevant authorities have been notified.'
+          : 'Your sighting has been recorded and is now visible on the board. Relevant contacts will be alerted.'
+        }
+      </p>
+      <div className="success-ref">Reference: {refNum}</div>
+
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 12, padding: '20px', marginBottom: 28, textAlign: 'left', fontSize: '.9rem' }}>
+        <div style={{ fontWeight: 600, marginBottom: 12, color: 'var(--ink)' }}>What happens next?</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, color: 'var(--muted)' }}>
+          <div>📋 Your report is live on the Missing Persons Board</div>
+          <div>📞 Notify the selected police station directly at <strong style={{ color: 'var(--green-dark)' }}>112</strong></div>
+          <div>📣 Share the case on social media to widen the search</div>
+          <div>🔄 Return here to submit updates if new information emerges</div>
         </div>
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'center' }}>
-          <button className="btn-xs btn-xs-primary" style={{ padding: '10px 16px', fontSize: '13px' }}>📤 Share alert</button>
-          <button className="btn-xs" style={{ padding: '10px 16px', fontSize: '13px' }}>📋 Download report PDF</button>
-          <button className="btn-xs" style={{ padding: '10px 16px', fontSize: '13px' }}>🔍 Track case status</button>
-        </div>
+      </div>
+
+      <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+        <button className="btn-done" onClick={onDone}>Back to Board</button>
+        <a
+          href={`tel:112`}
+          style={{ background: 'var(--red)', color: '#fff', padding: '13px 28px', borderRadius: 10, fontSize: '1rem', fontWeight: 500, display: 'inline-flex', alignItems: 'center', gap: 6 }}
+        >
+          📞 Call 112
+        </a>
       </div>
     </div>
   )

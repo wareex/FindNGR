@@ -1,45 +1,23 @@
-import { useState } from 'react'
-
-export default function Navbar({ onMode }) {
-  const [menuOpen, setMenuOpen] = useState(false)
-
-  function handleNavClick(mode) {
-    setMenuOpen(false)
-    onMode(mode)
-  }
-
+export default function Navbar() {
   return (
-    <nav className={menuOpen ? 'nav-menu-open' : ''}>
-      <div className="nav-logo">Find<span>NGR</span></div>
-
-      {/* Desktop links */}
-      <div className="nav-links nav-links-desktop">
-        <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('report') }}>Report</a>
-        <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('finder') }}>Found someone?</a>
-        <a href="#">Search</a>
-        <a href="#">Alerts</a>
-      </div>
-
-      <div className="nav-hotline">Hotline: 0800-FIND-NGR</div>
-
-      {/* Hamburger button — mobile only */}
-      <button
-        className="nav-hamburger"
-        aria-label="Toggle menu"
-        onClick={() => setMenuOpen(!menuOpen)}
-      >
-        <span /><span /><span />
-      </button>
-
-      {/* Mobile dropdown menu */}
-      {menuOpen && (
-        <div className="nav-mobile-menu">
-          <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('report') }}>📋 Report missing person</a>
-          <a href="#" onClick={(e) => { e.preventDefault(); handleNavClick('finder') }}>🔍 Found someone?</a>
-          <a href="#">🔎 Search</a>
-          <a href="#">🔔 Alerts</a>
+    <nav className="navbar">
+      <div className="navbar-inner">
+        <div className="navbar-logo">
+          <div className="navbar-logo-icon">🔍</div>
+          FindNGR
+          <span className="navbar-badge">LIVE</span>
         </div>
-      )}
+        <div className="navbar-links">
+          <button className="navbar-link" onClick={() => document.querySelector('.board-section')?.scrollIntoView({ behavior: 'smooth' })}>
+            Missing Board
+          </button>
+          <button className="navbar-link" onClick={() => document.getElementById('action-section')?.scrollIntoView({ behavior: 'smooth' })}>
+            Report / Finder
+          </button>
+          <a className="navbar-link" href="https://www.npf.gov.ng" target="_blank" rel="noreferrer">NPF Portal</a>
+          <a className="navbar-emergency" href="tel:112">🆘 112 Emergency</a>
+        </div>
+      </div>
     </nav>
   )
 }

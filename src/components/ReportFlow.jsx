@@ -1,39 +1,110 @@
-import ProgressBar from './ProgressBar'
-import Step1PersonDetails from './steps/Step1PersonDetails'
-import Step2PoliceStation from './steps/Step2PoliceStation'
-import Step3POCEntry from './steps/Step3POCEntry'
-import Step4Review from './steps/Step4Review'
-import Step5Success from './steps/Step5Success'
+import { useState } from 'react'
+import ProgressBar from './ProgressBar.jsx'
+import Step1PersonDetails from './steps/Step1PersonDetails.jsx'
+import Step2PoliceStation from './steps/Step2PoliceStation.jsx'
+import Step3POCEntry from './steps/Step3POCEntry.jsx'
+import Step4Review from './steps/Step4Review.jsx'
+import Step5Success from './steps/Step5Success.jsx'
 
-export default function ReportFlow() {
-  // step is 1-5; step 5 is the success screen (no progress bar)
-  const [step, setStep] = useState(1)
+const STEPS = ['Person Details', 'Police Station', 'Your Contact', 'Review']
 
-  function goStep(n) {
-    if (n < 1 || n > 5) return
-    setStep(n)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+function genRef() {
+  return 'FNG-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).slice(2,5).toUpperCase()
+}
+
+export default function ReportFlow({ onSubmit, onDone }) {
+  const [step, setStep] = useState(0)
+  const [refNum, setRefNum] = useState(null)
+  const [personData, setPersonData] = useState({})
+  const [stationData, setStationData] = useState({})
+  const [contactData, setContactData] = useState({})
+
+  const handleSubmit = () => {
+    const ref = genRef()
+    setRefNum(ref)
+    onSubmit({
+      id: ref,
+      name: personData.name,
+      age: personData.age,
+      gender: personData.gender,
+      state: personData.state,
+      lga: personData.lga,
+      lastSeen: personData.lastSeen,
+      dateLastSeen: personData.dateLastSeen,
+      complexion: personData.complexion,
+      description: personData.description,
+      photoUrl: personData.photoUrl || null,
+      station: stationData.selectedStation?.name,
+      policeReported: stationData.policeReported,
+      caseRef: stationData.caseRef,
+      reportedAt: new Date().toISOString(),
+      ref,
+    })
+    setStep(4)
   }
 
+  const stepTitles = [
+    'Person Details',
+    'Nearest Police Station',
+    'Your Contact Info',
+    'Review & Submit',
+  ]
+  const stepSubs = [
+    'Provide details about the missing person',
+    'Select a police station to notify',
+    'Your contact details for follow-up',
+    'Confirm all details before submitting',
+  ]
+
   return (
-    <div>
-      <div className="flow-header">
-        <h2>Report a missing person</h2>
-        <p>Complete all steps to file an official report and connect with your nearest police station.</p>
+    <div className="flow-wrapper">
+      <div className="flow-inner">
+        <div className="flow-card">
+          {step < 4 ? (
+            <>
+              <ProgressBar current={step} total={4} />
+              <h2 className="flow-title">{stepTitles[step]}</h2>
+              <p className="flow-sub">{stepSubs[step]}</p>
+
+              {step === 0 && (
+                <Step1PersonDetails
+                  data={personData}
+                  onChange={setPersonData}
+                  onNext={() => setStep(1)}
+                />
+              )}
+              {step === 1 && (
+                <Step2PoliceStation
+                  data={stationData}
+                  personData={personData}
+                  onChange={setStationData}
+                  onNext={() => setStep(2)}
+                  onBack={() => setStep(0)}
+                />
+              )}
+              {step === 2 && (
+                <Step3POCEntry
+                  data={contactData}
+                  onChange={setContactData}
+                  onNext={() => setStep(3)}
+                  onBack={() => setStep(1)}
+                />
+              )}
+              {step === 3 && (
+                <Step4Review
+                  personData={personData}
+                  stationData={stationData}
+                  contactData={contactData}
+                  onSubmit={handleSubmit}
+                  onBack={() => setStep(2)}
+                />
+              )}
+            </>
+          ) : (
+            <Step5Success refNum={refNum} onDone={onDone} type="report" />
+          )}
+        </div>
       </div>
-
-      {step < 5 && (
-        <ProgressBar currentStep={step} onGoStep={goStep} />
-      )}
-
-      {step === 1 && <Step1PersonDetails onNext={() => goStep(2)} />}
-      {step === 2 && <Step2PoliceStation onNext={() => goStep(3)} onBack={() => goStep(1)} />}
-      {step === 3 && <Step3POCEntry onNext={() => goStep(4)} onBack={() => goStep(2)} />}
-      {step === 4 && <Step4Review onSubmit={() => goStep(5)} onBack={() => goStep(3)} />}
-      {step === 5 && <Step5Success />}
     </div>
   )
 }
-
-// useState import needed inside this file
-import { useState } from 'react'

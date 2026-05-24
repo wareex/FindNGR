@@ -1,18 +1,20 @@
-export default function ModeBar({ mode, onMode }) {
+export default function ModeBar({ mode, setMode }) {
   return (
     <div className="mode-bar">
-      <button
-        className={`mode-btn ${mode === 'report' ? 'active' : ''}`}
-        onClick={() => onMode('report')}
-      >
-        📋 Report missing person
-      </button>
-      <button
-        className={`mode-btn ${mode === 'finder' ? 'active' : ''}`}
-        onClick={() => onMode('finder')}
-      >
-        🔍 I found someone
-      </button>
+      <div className="mode-bar-inner">
+        <button
+          className={`mode-tab ${mode === 'report' ? 'active-report' : ''}`}
+          onClick={() => setMode(mode === 'report' ? null : 'report')}
+        >
+          🚨 Report a Missing Person
+        </button>
+        <button
+          className={`mode-tab ${mode === 'finder' ? 'active-finder' : ''}`}
+          onClick={() => setMode(mode === 'finder' ? null : 'finder')}
+        >
+          👁️ I Found Someone
+        </button>
+      </div>
     </div>
   )
 }
