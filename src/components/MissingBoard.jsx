@@ -30,13 +30,15 @@ function CaseCard({ c }) {
           {c.lastSeen && <span>📍 Last seen: {c.lastSeen}</span>}
           {c.state && <span>🗺️ {c.state}{c.lga ? `, ${c.lga}` : ''}</span>}
           {c.type === 'sighting' && c.location && <span>📍 {c.location}</span>}
-          
         </div>
-         <ShareButtons
-        personName={selectedPerson.name}
-        reportId={selectedPerson.id || ""}
-      />
         <div className="case-card-date">Reported {timeAgo(c.reportedAt)}</div>
+
+        {/* ✅ FIXED: use `c` not `selectedPerson` */}
+        <ShareButtons
+          personName={c.name || 'a missing person'}
+          reportId={c.id || ''}
+        />
+
       </div>
     </div>
   )
