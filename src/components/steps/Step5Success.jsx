@@ -1,4 +1,6 @@
-export default function Step5Success({ refNum, onDone, type = 'report' }) {
+import ShareButtons from "../ShareButtons";
+
+export default function Step5Success({ refNum, onDone, type = 'report', formData = {} }) {
   return (
     <div className="success-screen">
       <div className="success-icon">{type === 'report' ? '✅' : '🙏'}</div>
@@ -23,9 +25,15 @@ export default function Step5Success({ refNum, onDone, type = 'report' }) {
         </div>
       </div>
 
-      <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+      {/* ── Share Buttons ── */}
+      <ShareButtons
+        personName={formData?.fullName || formData?.name || "the missing person"}
+        reportId={refNum || ""}
+      />
+
+      <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap', marginTop: 24 }}>
         <button className="btn-done" onClick={onDone}>Back to Board</button>
-        <a
+        
           href={`tel:112`}
           style={{ background: 'var(--red)', color: '#fff', padding: '13px 28px', borderRadius: 10, fontSize: '1rem', fontWeight: 500, display: 'inline-flex', alignItems: 'center', gap: 6 }}
         >

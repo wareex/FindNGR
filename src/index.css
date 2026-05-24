@@ -851,3 +851,68 @@ select.field-input { appearance: none; cursor: pointer; }
   .hero-actions button { width: 100%; }
   .board-grid { grid-template-columns: 1fr; }
 }
+
+/* ── Share Buttons ─────────────────────────────────── */
+.share-section {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border, #e5e7eb);
+  text-align: center;
+}
+
+.share-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-secondary, #6b7280);
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.share-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.share-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.85rem;
+  border-radius: 9999px;
+  border: 1.5px solid var(--platform-color);
+  color: var(--platform-color);
+  background: transparent;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.18s, color 0.18s, transform 0.12s;
+  white-space: nowrap;
+}
+
+.share-btn:hover {
+  background: var(--platform-color);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.share-btn--copy.copied {
+  background: #10b981;
+  border-color: #10b981;
+  color: #fff;
+}
+
+/* Responsive: stack to 2-col on small screens */
+@media (max-width: 480px) {
+  .share-btn span {
+    display: none; /* icon-only on very small screens */
+  }
+  .share-btn {
+    padding: 0.55rem;
+    border-radius: 50%;
+  }
+}
