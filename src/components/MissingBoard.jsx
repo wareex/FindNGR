@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import ShareButtons from "./ShareButtons";
 
 function timeAgo(dateStr) {
   const diff = Date.now() - new Date(dateStr).getTime()
@@ -29,6 +30,10 @@ function CaseCard({ c }) {
           {c.lastSeen && <span>📍 Last seen: {c.lastSeen}</span>}
           {c.state && <span>🗺️ {c.state}{c.lga ? `, ${c.lga}` : ''}</span>}
           {c.type === 'sighting' && c.location && <span>📍 {c.location}</span>}
+           <ShareButtons
+        personName={selectedPerson.name}
+        reportId={selectedPerson.id || ""}
+      />
         </div>
         <div className="case-card-date">Reported {timeAgo(c.reportedAt)}</div>
       </div>
