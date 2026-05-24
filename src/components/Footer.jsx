@@ -27,7 +27,6 @@ export default function Footer() {
             <button className="footer-link" onClick={() => document.querySelector('.board-section')?.scrollIntoView({ behavior: 'smooth' })}>Missing Board</button>
             <button className="footer-link" onClick={() => document.getElementById('action-section')?.scrollIntoView({ behavior: 'smooth' })}>Report Missing Person</button>
             <button className="footer-link" onClick={() => document.getElementById('action-section')?.scrollIntoView({ behavior: 'smooth' })}>I Found Someone</button>
-            <a className="footer-link" href="https://github.com/wareex/FindNGR" target="_blank" rel="noreferrer">GitHub Repo</a>
           </div>
         </div>
       </div>
